@@ -1,0 +1,54 @@
+{% set version = "3.2.1" %}
+
+package:
+  name: ogdi
+  version: {{ version }}
+
+source:
+  - url: https://github.com/libogdi/ogdi/archive/ogdi_3_2_1.tar.gz
+    sha256: 6086147f66c35f7cc7012bfeff2c74d7681e0419d75009e7b35e1f827a3458ce
+    patches:
+      # msys2 expands 'cl.exe /FLAG' to '<path>/FLAG'; use -FLAG instead
+      - 0001-msys2-path-translation.patch
+
+build:
+  number: 1001
+  # For now...
+  skip: True  # [not win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - posix
+    - m2-patch
+  host:
+    - expat
+    - proj4
+    - zlib
+  run:
+    - expat
+    - proj4
+    - zlib
+
+test:
+  commands:
+    - if not exist %LIBRARY_BIN%\\ogdi.dll exit 1  # [win]
+    - if not exist %LIBRARY_INC%\\ogdi\\ecs.h exit 1  # [win]
+    - if not exist %LIBRARY_LIB%\\ogdi.lib exit 1  # [win]
+
+about:
+  home: http://ogdi.sourceforge.net/
+  license: OGDI
+  license_file: LICENSE
+  summary: OGDI is the Open Geographic Datastore Interface
+  description: |
+    OGDI is an application programming interface (API) that uses a standardized
+    access methods to work in conjunction with GIS software packages (the
+    application) and various geospatial data products.
+  dev_url: https://github.com/libogdi/ogdi
+  doc_url: http://ogdi.sourceforge.net/
+
+extra:
+  recipe-maintainers:
+    - dakcarto

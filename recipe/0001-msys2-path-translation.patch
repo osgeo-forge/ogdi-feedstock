@@ -1,0 +1,140 @@
+diff --git a/config/win64.mak b/config/win64.mak
+index afc7517..341df53 100644
+--- a/config/win64.mak
++++ b/config/win64.mak
+@@ -28,10 +28,10 @@ Platform	= win32
+ # Standard tools
+ #
+ 
+-CC		= cl.exe /nologo
+-LD		= link.exe /nologo
+-SHLIB_LD	= link.exe /nologo
+-AR		= lib.exe /nologo
++CC		= cl.exe -nologo
++LD		= link.exe -nologo
++SHLIB_LD	= link.exe -nologo
++AR		= lib.exe -nologo
+ FILECOPY	= cp
+ MKDIR		= mkdir
+ DIRCOPY		= cp -rf
+@@ -62,8 +62,8 @@ SHLIB_EXT	= dll
+ # Command switches
+ #
+ 
+-DEFINE_SW	= /D
+-INCL_SW		= /I
++DEFINE_SW	= -D
++INCL_SW		= -I
+ LIB_SW		= /
+ LINK_SW		= 
+ 
+@@ -82,10 +82,10 @@ BIG_ENDIAN          = 0
+ # With these flags, you could run purify.
+ #
+ 
+-WINCPP_DEBUG	= /EHsc /D_DEBUG /Zi $(CPP_DEBUG) 
+-WINCPP_RELEASE	= /EHsc /Gy /Od /DNDEBUG $(CPP_RELEASE) 
+-LINK_DEBUG	= /DEBUG /INCREMENTAL:no /FIXED:NO
+-LINK_RELEASE	= /INCREMENTAL:no /OPT:REF
++WINCPP_DEBUG	= -EHsc -D_DEBUG -Zi $(CPP_DEBUG)
++WINCPP_RELEASE	= -EHsc -Gy -Od -DNDEBUG $(CPP_RELEASE)
++LINK_DEBUG	= -DEBUG -INCREMENTAL:no -FIXED:NO
++LINK_RELEASE	= -INCREMENTAL:no -OPT:REF
+ 
+ #flags
+ 
+@@ -93,8 +93,8 @@ LINK_RELEASE	= /INCREMENTAL:no /OPT:REF
+ # With these flags, you could run purify.
+ #
+ 
+-#LINK_DEBUG	= /DEBUG /INCREMENTAL:no /debugtype:cv
+-#WINCPP_RELEASE	= /EHsc /Gi- /Gy /O2 /DNDEBUG $(CPP_RELEASE) 
++#LINK_DEBUG	= -DEBUG -INCREMENTAL:no -debugtype:cv
++#WINCPP_RELEASE	= -EHsc -Gi- -Gy -O2 -DNDEBUG $(CPP_RELEASE)
+ 
+ 
+ SMARTHEAP_LIB =
+@@ -108,8 +108,8 @@ LINK_OPTIMIZATION = $(LINK_RELEASE)
+ endif
+ 
+ SHLIB_CFLAGS	=
+-SHLIB_LDFLAGS	= /DLL
+-COMMON_LDFLAGS	= /DEBUG
++SHLIB_LDFLAGS	= -DLL
++COMMON_LDFLAGS	= -DEBUG
+ 
+ #
+ # Standard location of compiled component libraries
+@@ -138,20 +138,20 @@ RPC_LINKLIB           = $(LIBDIR)/static/rpc.lib
+ # rules
+ #
+ 
+-COMMON_CFLAGS = /D_WINDOWS /DWIN32 /D_MBCS \
+-	/Dhypot=_hypot /DNO_DIRENT_H \
+-	/DSIGQUIT=SIGBREAK /Dioctl=Ioctl /DSIGPIPE=SIGTERM \
+-	/DSIGHUP=SIGTERM /DSIGALRM=SIGTERM   /Dpopen=_popen \
+-	/Dpclose=_pclose \
+-	/DMISSING_DLFCN_H \
++COMMON_CFLAGS = -D_WINDOWS -DWIN32 -D_MBCS \
++	-Dhypot=_hypot -DNO_DIRENT_H \
++	-DSIGQUIT=SIGBREAK -Dioctl=Ioctl -DSIGPIPE=SIGTERM \
++	-DSIGHUP=SIGTERM -DSIGALRM=SIGTERM   -Dpopen=_popen \
++	-Dpclose=_pclose \
++	-DMISSING_DLFCN_H \
+ 	$(OPTIMIZATION) \
+-	/W3 /MD /c /Fpheaders.pch
++	-W3 -MD -c -Fpheaders.pch
+ 
+-#FLAGS_X86DEF = /D_X86_
++#FLAGS_X86DEF = -D_X86_
+ 
+ $(subst :,\:,$(ARCHGEN)): $(OBJECTS)
+ 	@echo Making archive file: $@
+-	$(AR) /OUT:$@ $^ 
++	$(AR) -OUT:$@ $^
+ 	@echo $@ made successfully ...
+ 
+ DEF_FILE=$(TOBEGEN_STRIPPED).def
+@@ -160,19 +160,19 @@ RC_FILE=$(TOBEGEN).rc
+ 
+ $(subst :,\:,$(DYNAGEN)): $(DEF_FILE) $(OBJECTS)
+ 	@echo Making dynamic file: $@
+-	@echo 
+-	$(SHLIB_LD) /DLL $(LINK_OPTIMIZATION) \
+-	$(filter %.$(OBJ_EXT),$^) $(LINK_LIBS) /DEF:$(filter %.def,$^) \
+-	/OUT:$(TOBEGEN).dll \
+-	/IMPLIB:$(TOPDIR)/lib/$(TARGET)/$(LIB_PREFIX)$(TOBEGEN).$(ARCH_EXT) \
+-	/OUT:$@
++	@echo
++	$(SHLIB_LD) -DLL $(LINK_OPTIMIZATION) \
++	$(filter %.$(OBJ_EXT),$^) $(LINK_LIBS) -DEF:$(filter %.def,$^) \
++	-OUT:$(TOBEGEN).dll \
++	-IMPLIB:$(TOPDIR)/lib/$(TARGET)/$(LIB_PREFIX)$(TOBEGEN).$(ARCH_EXT) \
++	-OUT:$@
+ 
+ ifndef WITHICON
+ $(subst :,\:,$(PROGGEN)): $(OBJECTS)
+ 	@echo Making executable file:  $@
+ 	$(LD) $^ $(LINK_LIBS) \
+ 	$(LINK_OPTIMIZATION) $(SMARTHEAP_LINKLIB)  \
+-	/OUT:$@
++	-OUT:$@
+ 
+ else
+ $(subst :,\:,$(PROGGEN)): $(RES_FILE) $(OBJECTS)
+@@ -180,7 +180,7 @@ $(subst :,\:,$(PROGGEN)): $(RES_FILE) $(OBJECTS)
+ 	$(LD) $(filter %.$(OBJ_EXT),$^) $(LINK_LIBS) \
+ 	$(filter %.res,$^) \
+ 	$(LINK_OPTIMIZATION) $(SMARTHEAP_LINKLIB) \
+-	/OUT:$@
++	-OUT:$@
+ endif
+ 
+ 
+@@ -188,5 +188,5 @@ endif
+ 	$(CC) $(CFLAGS) $(CPPFLAGS) $< 
+ 
+ $(subst :,\:,$(RES_FILE)): $(RC_FILE)
+-	$(RSC) /fo"$@" $(GENERAL_INCLUDE) $(TCLTK_INCLUDE) $^
++	$(RSC) -fo"$@" $(GENERAL_INCLUDE) $(TCLTK_INCLUDE) $^
+ 
